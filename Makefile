@@ -1,5 +1,5 @@
-restsh: restsh.c
-	gcc -Wall `pkg-config --libs --cflags libedit libcurl` -g restsh.c -o restsh
+restsh: restsh.c command_prompt.c command_prompt.h
+	gcc -Wall `pkg-config --libs --cflags libedit libcurl` -g restsh.c command_prompt.c -o restsh
 
 run: restsh
 	./restsh

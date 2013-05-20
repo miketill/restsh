@@ -4,20 +4,11 @@
 #include <histedit.h>
 #include <curl/curl.h>
 
+#include "command_prompt.h"
+
 #define ERROR(msg) fprintf(stderr, msg); ret = -1; goto CLEANUP;
 
 #define HIST_SIZE 200;
-#define MAX_PROMPT_LENGTH 100
-
-char command_prompt[MAX_PROMPT_LENGTH];
-
-static void set_command_prompt(char * url) {
-    snprintf(command_prompt, MAX_PROMPT_LENGTH, "HTTP %s> ", url);
-}
-
-static char * get_command_prompt() {
-    return command_prompt;
-}
 
 char * prompt(EditLine *e) {
     return get_command_prompt();
