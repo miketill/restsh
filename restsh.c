@@ -7,9 +7,20 @@
 #define ERROR(msg) fprintf(stderr, msg); ret = -1; goto CLEANUP;
 
 #define HIST_SIZE 200;
+#define MAX_PROMPT_LENGTH 100
+
+char command_prompt[MAX_PROMPT_LENGTH];
+
+static void set_command_prompt(char * url) {
+    snprintf(command_prompt, MAX_PROMPT_LENGTH, "HTTP %s> ", url);
+}
+
+static char * get_command_prompt() {
+    return command_prompt;
+}
 
 char * prompt(EditLine *e) {
-    return "HTTP> ";
+    return get_command_prompt();
 }
 
 int main(int argc, char *argv[]) {
@@ -18,6 +29,8 @@ int main(int argc, char *argv[]) {
     History *hist = NULL;
     HistEvent hist_event;
     CURL *curl = NULL;
+
+    set_command_prompt("<none>");
 
     //INIT CURL
     if (0 != curl_global_init(CURL_GLOBAL_ALL)) {
