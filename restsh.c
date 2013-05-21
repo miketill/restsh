@@ -48,22 +48,40 @@ int main(int argc, char *argv[]) {
     //main loop
     int count;
     const char *line;
-    char *base_url = "http://www.miketill.com";
-    int base_len = strlen(base_url);
+    char *base_url = NULL;
+    int base_len = 0;
 
     curl = curl_easy_init();
     while ((line = el_gets(el, &count))) {
         if (count > 1) {
             history(hist, &hist_event, H_ENTER, line);
-            char *url = malloc(sizeof(char)*(base_len+count));
-            if (!url) {
-                ERROR("malloc for url");
+            if (count > 4 &&
+                line[0] == 'u' &&
+                line[1] == 's' &&
+                line[2] == 'e' &&
+                line[3] == ' ') {
+                if (base_url) {
+                    free(base_url);
+                }
+                base_url = malloc(sizeof(char)*(count-4));
+                strncpy(base_url, line+4, count-5);
+                base_url[count-5] = 0;
+                base_len = strlen(base_url);
+                set_command_prompt(base_url);
             }
-            strcpy(url, base_url);
-            strcat(url, line);
-            curl_easy_setopt(curl, CURLOPT_URL, url);
-            curl_easy_perform(curl);
-            free(url);
+            else if (base_url) {
+                char *url = malloc(sizeof(char)*(base_len+count));
+                if (!url) {
+                    ERROR("malloc for url");
+                }
+                strcpy(url, base_url);
+                strncat(url, line, count-1);
+                url[base_len+count-1] = 0;
+                curl_easy_setopt(curl, CURLOPT_URL, url);
+                curl_easy_perform(curl);
+                printf("GOT [%s]\n",url);
+                free(url);
+            }
         }
     }
     putc('\n', stdout);
